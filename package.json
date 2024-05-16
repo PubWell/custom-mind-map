@@ -4,8 +4,8 @@
   "description": "根据simple-mind-map修改",
   "authors": [
     {
-      "name": "manjing",
-      "email": "1455824335@qq.com"
+      "name": "pubwell",
+      "email": "mjxiangwy@163.com"
     }
   ],
   "types": "./types/index.d.ts",
@@ -13,7 +13,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wanglin2/mind-map"
+    "url": "https://github.com/PubWell/custom-mind-map"
   },
   "scripts": {
     "lint": "eslint src/",
