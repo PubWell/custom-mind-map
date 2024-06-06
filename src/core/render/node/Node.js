@@ -18,6 +18,13 @@ class Node {
     this.nodeData = this.handleData(opt.data || {})
     // uid
     this.uid = opt.uid
+
+    // 增加连接线流动动画
+    // this.lineAnimation = false
+    // this.lineAnimationPositive = true
+    this.lineAnimation = opt.lineAnimation || false
+    this.lineAnimationPositive = opt.lineAnimationPositive || true
+
     // 控制实例
     this.mindMap = opt.mindMap
     // 渲染实例
@@ -154,6 +161,14 @@ class Node {
 
   set top(val) {
     this._top = val
+  }
+
+  setLineAnimation(val) {
+    this.lineAnimation = val
+  }
+
+  setLineAnimationPositive(val) {
+    this.lineAnimationPositive = val
   }
 
   //  复位部分布局时会重新设置的数据

@@ -212,8 +212,11 @@ class Style {
     
     // 控制线的流动和方向
     if(childNode){
-      const lineAnimation =  this.merge('lineAnimation', true)
-      const lineAnimationPositive =  this.merge('lineAnimationPositive', true)
+      // console.log('style line>>>>>>>>>>>>', childNode.uid, childNode.lineAnimation, childNode.lineAnimationPositive)
+      // const lineAnimation =  this.merge('lineAnimation', true)
+      // const lineAnimationPositive =  this.merge('lineAnimationPositive', true)
+      const lineAnimation =  childNode.lineAnimation
+      const lineAnimationPositive =  childNode.lineAnimationPositive
       const key = lineAnimationPositive ? -1 : 1
 
       if(lineAnimation){
@@ -241,7 +244,8 @@ class Style {
         const dir = childNodeStyle.merge('lineMarkerDir')
         // console.log(childNodeStyle._marker.id())
         let tl = line.length(), c = tl/2, markId = childNodeStyle._marker.id()
-        line.marker(dir, childNodeStyle._marker)
+        // line.marker(dir, childNodeStyle._marker)
+        
         // line.marker(markId, c)
         // line.attr('marker-mid', childNodeStyle._marker)
       } else if (childNodeStyle._marker) {

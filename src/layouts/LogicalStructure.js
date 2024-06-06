@@ -82,8 +82,12 @@ class LogicalStructure extends Base {
           // 第一个子节点的top值 = 该节点中心的top值 - 子节点的高度之和的一半
           let top = node.top + node.height / 2 - node.childrenAreaHeight / 2
           let totalTop = top + marginY
-          node.children.forEach(cur => {
-            cur.top = totalTop
+          node.children.forEach((cur, index) => {
+            if(node.children.length % 2 > 0 && index == (node.children.length - 1)/2){
+              cur.top = node.top + node.height / 2 - cur.height / 2
+            }else{
+              cur.top = totalTop
+            }
             totalTop += cur.height + marginY
           })
         }
@@ -166,22 +170,27 @@ class LogicalStructure extends Base {
       expandBtnSize = 0
     }
     let marginX = this.getMarginX(node.layerIndex + 1)
-    let s1 = (marginX - expandBtnSize) * 0.6
+    let s1 = (marginX - expandBtnSize) * 0.3
     let nodeUseLineStyle = this.mindMap.themeConfig.nodeUseLineStyle
+
+    let len = node.children.length
+    let dy = height / (len + 1), dx = marginX * 0.4 / (Math.floor(len / 2) + 1)
     node.children.forEach((item, index) => {
       let x1 =
         node.layerIndex === 0 ? left + width : left + width + expandBtnSize
-      let y1 = top + height / 2
+      let y1 = top + dy * (index + 1)
       let x2 = item.left
       let y2 = item.top + item.height / 2
       // 节点使用横线风格，需要额外渲染横线
       let nodeUseLineStyleOffset = nodeUseLineStyle ? item.width : 0
       y1 = nodeUseLineStyle && !node.isRoot ? y1 + height / 2 : y1
       y2 = nodeUseLineStyle ? y2 + item.height / 2 : y2
+
+      let midX = index < len / 2 ?  x1 + s1 + dx * (index + 1) : x1 + s1 + dx * (len-index)
       let path = this.createFoldLine([
         [x1, y1],
-        [x1 + s1, y1],
-        [x1 + s1, y2],
+        [midX, y1],
+        [midX, y2],
         [x2 + nodeUseLineStyleOffset, y2]
       ])
       this.setLineStyle(style, lines[index], path, item)

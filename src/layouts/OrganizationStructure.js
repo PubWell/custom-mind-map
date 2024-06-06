@@ -83,8 +83,12 @@ class OrganizationStructure extends Base {
           // 第一个子节点的left值 = 该节点中心的left值 - 子节点的宽度之和的一半
           let left = node.left + node.width / 2 - node.childrenAreaWidth / 2
           let totalLeft = left + marginX
-          node.children.forEach(cur => {
-            cur.left = totalLeft
+          node.children.forEach((cur, index) => {
+            if(node.children.length % 2 > 0 && index == (node.children.length - 1)/2){
+              cur.left = node.left + node.width / 2 - cur.width / 2
+            }else{
+              cur.left = totalLeft
+            }
             totalLeft += cur.width + marginX
           })
         }
@@ -231,11 +235,17 @@ class OrganizationStructure extends Base {
     let x1 = left + width / 2
     let y1 = top + height
     let marginX = this.getMarginX(node.layerIndex + 1)
-    let s1 = marginX * 0.7
+    let s1 = marginX * 0.3
     let minx = Infinity
     let maxx = -Infinity
     let len = node.children.length
+    expandBtnSize = len > 0 && !isRoot ? expandBtnSize : 0
+
+    let dx = width / (len + 1), dy = marginX * 0.4 / (Math.floor(len / 2) + 1)
     node.children.forEach((item, index) => {
+      x1 = left + dx * (index + 1)
+      y1 = index < len / 2 ?  top + height + s1 + dy * (index + 1) : top + height + s1 + dy * (len-index)
+
       let x2 = item.left + item.width / 2
       let y2 = y1 + s1 > item.top ? item.top + item.height : item.top
       if (x2 < minx) {
@@ -248,34 +258,27 @@ class OrganizationStructure extends Base {
       let nodeUseLineStylePath = this.mindMap.themeConfig.nodeUseLineStyle
         ? ` L ${item.left},${y2} L ${item.left + item.width},${y2}`
         : ''
-      let path = `M ${x2},${y1 + s1} L ${x2},${y2}` + nodeUseLineStylePath
+      let mid = len == 1 ? `` : `L ${x1},${y1} L ${x2},${y1}`
+      let path = `M ${x1},${top + height + expandBtnSize} ${mid} L ${x2},${y2}` + nodeUseLineStylePath
       this.setLineStyle(style, lines[index], path, item)
       // 水平线
-      let lin2 = this.lineDraw.path()
-      node.style.line(lin2)
-      lin2.plot(this.transformPath(`M ${x1},${y1 + s1} L ${x2},${y1 + s1}`))
-      node._lines.push(lin2)
-      style && style(lin2, node)
+      // let lin2 = this.lineDraw.path()
+      // node.style.line(lin2)
+      // lin2.plot(this.transformPath(`M ${x1},${y1 + s1} L ${x2},${y1 + s1}`))
+      // node._lines.push(lin2)
+      // style && style(lin2, node)
     })
     minx = Math.min(x1, minx)
     maxx = Math.max(x1, maxx)
     // 父节点的竖线
-    let line1 = this.lineDraw.path()
-    node.style.line(line1)
-    expandBtnSize = len > 0 && !isRoot ? expandBtnSize : 0
-    line1.plot(
-      this.transformPath(`M ${x1},${y1 + expandBtnSize} L ${x1},${y1 + s1}`)
-    )
-    node._lines.push(line1)
-    style && style(line1, node)
-    // 水平线
-    // if (len > 0) {
-    //   let lin2 = this.lineDraw.path()
-    //   node.style.line(lin2)
-    //   lin2.plot(this.transformPath(`M ${minx},${y1 + s1} L ${maxx},${y1 + s1}`))
-    //   node._lines.push(lin2)
-    //   style && style(lin2, node)
-    // }
+    // let line1 = this.lineDraw.path()
+    // node.style.line(line1)
+    // expandBtnSize = len > 0 && !isRoot ? expandBtnSize : 0
+    // line1.plot(
+    //   this.transformPath(`M ${x1},${y1 + expandBtnSize} L ${x1},${y1 + s1}`)
+    // )
+    // node._lines.push(line1)
+    // style && style(line1, node)
   }
 
   //  渲染按钮
