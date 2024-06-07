@@ -20,10 +20,8 @@ class Node {
     this.uid = opt.uid
 
     // 增加连接线流动动画
-    // this.lineAnimation = false
-    // this.lineAnimationPositive = true
-    this.lineAnimation = opt.lineAnimation || false
-    this.lineAnimationPositive = opt.lineAnimationPositive || true
+    this.lineAnimation = opt.data.data.lineAnimation || false
+    this.lineAnimationPositive = opt.data.data.lineAnimationPositive || true
 
     // 控制实例
     this.mindMap = opt.mindMap
@@ -163,10 +161,12 @@ class Node {
     this._top = val
   }
 
+  // 设置连接线流动效果
   setLineAnimation(val) {
     this.lineAnimation = val
   }
 
+  // 设置连接线流动方向
   setLineAnimationPositive(val) {
     this.lineAnimationPositive = val
   }
