@@ -84,11 +84,16 @@ class OrganizationStructure extends Base {
           let left = node.left + node.width / 2 - node.childrenAreaWidth / 2
           let totalLeft = left + marginX
           node.children.forEach((cur, index) => {
-            if(node.children.length % 2 > 0 && index == (node.children.length - 1)/2){
-              cur.left = node.left + node.width / 2 - cur.width / 2
-            }else{
-              cur.left = totalLeft
-            }
+            // 强制中心节点垂直时会造成同级和子级节点重叠
+            // if(node.children.length % 2 > 0 && index == (node.children.length - 1)/2
+            //     && index > 0 && node.children[index-1].left + node.children[index-1].width > node.left + node.width / 2 - cur.width / 2
+            //   ){
+            //   cur.left = node.left + node.width / 2 - cur.width / 2
+            //   let diff = cur.left - totalLeft
+            //   totalLeft += cur.width + marginX + diff
+            // }else{
+            // }
+            cur.left = totalLeft
             totalLeft += cur.width + marginX
           })
         }
@@ -235,19 +240,26 @@ class OrganizationStructure extends Base {
     let x1 = left + width / 2
     let y1 = top + height
     let marginX = this.getMarginX(node.layerIndex + 1)
-    let s1 = marginX * 0.3
+    let s1 = marginX * 0.4
     let minx = Infinity
     let maxx = -Infinity
     let len = node.children.length
     expandBtnSize = len > 0 && !isRoot ? expandBtnSize : 0
 
-    let dx = width / (len + 1), dy = marginX * 0.4 / (Math.floor(len / 2) + 1)
-    node.children.forEach((item, index) => {
-      x1 = left + dx * (index + 1)
-      y1 = index < len / 2 ?  top + height + s1 + dy * (index + 1) : top + height + s1 + dy * (len-index)
+    let dx = width / (len + 1)
+    let rStart = node.children.findIndex((item, index) => item.left + item.width / 2 > left + dx * (index + 1))
+    let rdy = marginX * 0.2 / (len - rStart + 1),
+        ldy = marginX * 0.2 / (rStart + 1)
 
+        // 奇数个中心节点垂直时：ldy = len % 2 === 0 ? marginX * 0.2 / (rStart + 1) : Math.floor(len / 2) == rStart ? marginX * 0.2 / (rStart + 1) : marginX * 0.2 / rStart
+
+    node.children.forEach((item, index) => {
       let x2 = item.left + item.width / 2
-      let y2 = y1 + s1 > item.top ? item.top + item.height : item.top
+      x1 = left + dx * (index + 1)
+      y1 = index < rStart ? parseInt(top + height + s1 + ldy * (index + 1)) : parseInt(top + height + s1 + rdy * (len - index))
+
+      let y2 = parseInt(y1 + s1) > item.top ? item.top + item.height : item.top
+
       if (x2 < minx) {
         minx = x2
       }
@@ -268,8 +280,8 @@ class OrganizationStructure extends Base {
       // node._lines.push(lin2)
       // style && style(lin2, node)
     })
-    minx = Math.min(x1, minx)
-    maxx = Math.max(x1, maxx)
+    // minx = Math.min(x1, minx)
+    // maxx = Math.max(x1, maxx)
     // 父节点的竖线
     // let line1 = this.lineDraw.path()
     // node.style.line(line1)

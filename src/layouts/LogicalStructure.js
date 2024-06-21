@@ -83,11 +83,16 @@ class LogicalStructure extends Base {
           let top = node.top + node.height / 2 - node.childrenAreaHeight / 2
           let totalTop = top + marginY
           node.children.forEach((cur, index) => {
-            if(node.children.length % 2 > 0 && index == (node.children.length - 1)/2){
-              cur.top = node.top + node.height / 2 - cur.height / 2
-            }else{
-              cur.top = totalTop
-            }
+            // 强制中心节点垂直时会造成同级和子级节点重叠
+            // if(node.children.length % 2 > 0 && index == (node.children.length - 1)/2
+            //     && index > 0 && node.children[index-1].top + node.children[index-1].height > node.top + node.height / 2 - cur.height / 2
+            //   ){
+            //   cur.top = node.top + node.height / 2 - cur.height / 2
+            //   let diff = cur.top - totalTop
+            //   totalTop += cur.height + marginY + diff
+            // }else{
+            // }
+            cur.top = totalTop
             totalTop += cur.height + marginY
           })
         }
@@ -170,11 +175,18 @@ class LogicalStructure extends Base {
       expandBtnSize = 0
     }
     let marginX = this.getMarginX(node.layerIndex + 1)
-    let s1 = (marginX - expandBtnSize) * 0.3
+    let s1 = (marginX - expandBtnSize) * 0.4
     let nodeUseLineStyle = this.mindMap.themeConfig.nodeUseLineStyle
 
     let len = node.children.length
-    let dy = height / (len + 1), dx = marginX * 0.4 / (Math.floor(len / 2) + 1)
+    let dy = height / (len + 1)
+
+    let rStart = node.children.findIndex((item, index) => item.top + item.height / 2 > top + dy * (index + 1))
+    let rdx = marginX * 0.2 / (len - rStart + 1),
+        ldx = marginX * 0.2 / (rStart + 1)
+
+        // 奇数个中心节点垂直时：ldx = len % 2 === 0 ? marginX * 0.2 / (rStart + 1) : Math.floor(len / 2) == rStart ? marginX * 0.2 / (rStart + 1) : marginX * 0.2 / rStart
+
     node.children.forEach((item, index) => {
       let x1 =
         node.layerIndex === 0 ? left + width : left + width + expandBtnSize
@@ -186,7 +198,7 @@ class LogicalStructure extends Base {
       y1 = nodeUseLineStyle && !node.isRoot ? y1 + height / 2 : y1
       y2 = nodeUseLineStyle ? y2 + item.height / 2 : y2
 
-      let midX = index < len / 2 ?  x1 + s1 + dx * (index + 1) : x1 + s1 + dx * (len-index)
+      let midX = index < rStart ?  x1 + s1 + ldx * (index + 1) : x1 + s1 + rdx * (len - index)
       let path = this.createFoldLine([
         [x1, y1],
         [midX, y1],
